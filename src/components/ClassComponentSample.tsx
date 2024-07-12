@@ -51,11 +51,40 @@ export class ClassComponentSample extends Component<Props, State> {
 		});
 	};
 
+	// component ilk açılışında apidan veri çekme işlemleri burada yapılır
+	componentDidMount(): void {
+		console.log('render sonra çalışan ilk method');
+	}
+
+	// 2. faz statechange - tekrardan render alır. re-render işlemi gerçekleşir.
+	componentDidUpdate(
+		prevProps: Readonly<Props>,
+		prevState: Readonly<State>,
+		snapshot?: any
+	): void {
+		console.log(
+			'component did mount sonrası çalışır compoennt state veya propsların değişim anını yakalar',
+			prevProps,
+			prevState,
+			this.state
+		);
+	}
+
+	// 3.faz unmount
+	componentWillUnmount(): void {
+		console.log(
+			'component sayfadan ayrıldığında tetiklenir. Component domdan ayrılır'
+		);
+	}
+
+	// render phase
 	render(): ReactNode {
+		console.log('...rendering');
 		return (
 			<>
 				{/* model binding */}
-				<h1>{this.state.title}</h1>
+
+				<h1>Props Title: {this.props.title}</h1>
 				<p>{this.props.content}</p>
 				<button onClick={this.click}>Click Me</button>
 				<button onClick={this.click2}>Click Me 2</button>

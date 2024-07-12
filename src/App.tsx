@@ -1,32 +1,47 @@
-import React from 'react';
+import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import { ClassComponentSample } from './components/ClassComponentSample';
 
-function App() {
-	return (
-		<div className="App">
-			<header className="App-header">
-				<img src={logo} className="App-logo" alt="logo" />
-				<p>
-					Edit <code>src/App.tsx</code> and save to reload.
-				</p>
-				<a
-					className="App-link"
-					href="https://reactjs.org"
-					target="_blank"
-					rel="noopener noreferrer"
-				>
-					Learn React
-				</a>
-			</header>
-			<div>
-				<ClassComponentSample title="ClassComponent" />
+type Props = {};
+
+type State = { title: string; visible: boolean };
+class App extends Component<Props, State> {
+	// eslint-disable-next-line @typescript-eslint/no-useless-constructor
+	constructor(props: Props) {
+		super(props);
+		this.state = { title: '', visible: true };
+	}
+
+	onInputChange = (event: any) => {
+		console.log('event', event);
+		this.setState({ title: event.target.value });
+	};
+
+	onToggleButton = () => {
+		// this.setState({ visible: false, title: this.state.title });
+		this.setState({ ...this.state, visible: !this.state.visible });
+	};
+
+	render(): React.ReactNode {
+		return (
+			<div
+				className="App"
+				style={{ padding: '2rem', background: 'yellow', color: 'blueviolet' }}
+			>
+				<input onChange={this.onInputChange} />
+				<hr></hr>
+				<button onClick={this.onToggleButton}>Toggle </button>
+				<hr></hr>
+				Visible State: {this.state.visible ? <>Visible</> : <>Not Visible</>}
 				<hr />
+				{this.state.visible && (
+					<ClassComponentSample title={this.state.title} />
+				)}
 				<ClassComponentSample title="Component-2" content="İçerik-2" />
 			</div>
-		</div>
-	);
+		);
+	}
 }
 
 export default App;
