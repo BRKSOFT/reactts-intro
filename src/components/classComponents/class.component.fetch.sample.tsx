@@ -1,5 +1,5 @@
 import { Component, ReactNode } from 'react';
-import { Todo } from '../models/todo.model';
+import { Todo } from '../../models/todo.model';
 
 type Props = {};
 

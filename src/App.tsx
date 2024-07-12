@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
-import { ClassComponentSample } from './components/ClassComponentSample';
-import { ClassComponentFetchSample } from './components/class.component.fetch.sample';
-import WrapperComponent from './components/wrapper.component';
+import { ClassComponentSample } from './components/classComponents/ClassComponentSample';
+import { ClassComponentFetchSample } from './components/classComponents/class.component.fetch.sample';
+import WrapperComponent from './components/classComponents/wrapper.component';
 
 type Props = {};
 
