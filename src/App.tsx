@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import { ClassComponentSample } from './components/ClassComponentSample';
+import { ClassComponentFetchSample } from './components/class.component.fetch.sample';
 
 type Props = {};
 
@@ -38,7 +39,8 @@ class App extends Component<Props, State> {
 				{this.state.visible && (
 					<ClassComponentSample title={this.state.title} />
 				)}
-				<ClassComponentSample title="Component-2" content="İçerik-2" />
+				<hr />
+				<ClassComponentFetchSample />
 			</div>
 		);
 	}
