@@ -3,6 +3,7 @@ import logo from './logo.svg';
 import './App.css';
 import { ClassComponentSample } from './components/ClassComponentSample';
 import { ClassComponentFetchSample } from './components/class.component.fetch.sample';
+import WrapperComponent from './components/wrapper.component';
 
 type Props = {};
 
@@ -30,17 +31,27 @@ class App extends Component<Props, State> {
 				className="App"
 				style={{ padding: '2rem', background: 'yellow', color: 'blueviolet' }}
 			>
-				<input onChange={this.onInputChange} />
-				<hr></hr>
-				<button onClick={this.onToggleButton}>Toggle </button>
-				<hr></hr>
-				Visible State: {this.state.visible ? <>Visible</> : <>Not Visible</>}
+				<WrapperComponent styles={{ padding: '2rem' }}>
+					<input onChange={this.onInputChange} />
+					<hr></hr>
+					<button onClick={this.onToggleButton}>Toggle </button>
+					<hr></hr>
+					Visible State: {this.state.visible ? <>Visible</> : <>Not Visible</>}
+					<hr />
+					{this.state.visible && (
+						<ClassComponentSample title={this.state.title} />
+					)}
+				</WrapperComponent>
+
 				<hr />
-				{this.state.visible && (
+				<WrapperComponent styles={{ padding: '5rem' }}>
+					<ClassComponentFetchSample />
 					<ClassComponentSample title={this.state.title} />
-				)}
-				<hr />
-				<ClassComponentFetchSample />
+
+					{/* <ClassComponentSample title="sadsad">
+						<p>Deneme1</p>
+					</ClassComponentSample> */}
+				</WrapperComponent>
 			</div>
 		);
 	}
