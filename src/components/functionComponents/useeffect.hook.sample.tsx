@@ -10,10 +10,16 @@ import { Todo } from '../../models/todo.model';
 
 type State = {
 	todos: Todo[]; // referans güncellem üzerinden useState nasıl kullanıyoruz.
+	editMode: boolean;
+	selectedId: number;
 };
 
 function UseEffectHookSample() {
-	const [state, setState] = useState<State>({ todos: [] });
+	const [state, setState] = useState<State>({
+		todos: [],
+		editMode: false,
+		selectedId: -1,
+	});
 
 	const loadDataAsync = async () => {
 		const response = await fetch('https://jsonplaceholder.typicode.com/todos');
@@ -49,30 +55,105 @@ function UseEffectHookSample() {
 	const inputTitle = useRef<HTMLInputElement>(null);
 	const inputCompleted = useRef<HTMLInputElement>(null);
 
+	// edit mode veya create mode yönettiğimiz kısım.
+	// düzenleme varsa kayıt güncelleme sürcini yönetir.
+	// yeni bir kayıt girilecek ise editMode false çalışır. ekrandaki süreci günceller.
 	const onFormSubmit = (event: FormEvent) => {
 		event.preventDefault(); // Formun post olmasını engelle
-		const data: Todo = {
-			id: state.todos.length + 1,
-			userId: state.todos.length + 1,
-			completed: inputCompleted.current?.checked,
-			title: inputTitle.current?.value || '',
-		};
 
-		setState({ ...state, todos: [data, ...state.todos] });
+		if (state.editMode === false) {
+			const data: Todo = {
+				id: state.todos.length + 1,
+				userId: state.todos.length + 1,
+				completed: inputCompleted.current?.checked,
+				title: inputTitle.current?.value || '',
+			};
 
-		// form bilgilerini temizledik
+			setState({ ...state, todos: [data, ...state.todos] });
 
-		if (inputTitle.current) {
-			inputTitle.current.value = '';
+			// form bilgilerini temizledik
+
+			if (inputTitle.current) {
+				inputTitle.current.value = '';
+			}
+
+			if (inputCompleted.current) {
+				inputCompleted.current.checked = false;
+			}
+		} else {
+			const updatedTodos = state.todos.map((item, index) => {
+				if (item.id === state.selectedId) {
+					// güncellenecek değeri bulma
+					item.completed = inputCompleted.current?.checked as boolean;
+					item.title = inputTitle.current?.value as string;
+				}
+
+				return { ...item };
+			});
+
+			const data = {
+				title: inputTitle.current?.value as string,
+				completed: inputCompleted.current?.checked as boolean,
+			};
+
+			fetch('https://jsonplaceholder.typicode.com/todos', {
+				method: 'Post',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(data),
+			})
+				.then((response) => response.json())
+				.then((data) => {
+					console.log('api result', data);
+
+					alert('işlem başarılı');
+
+					setState({
+						...state,
+						todos: updatedTodos,
+						editMode: false,
+						selectedId: -1,
+					});
+
+					// api post
+
+					if (inputCompleted.current) {
+						inputCompleted.current.checked = false;
+					}
+					if (inputTitle.current) {
+						inputTitle.current.value = '';
+					}
+				});
+		}
+	};
+
+	// düzenle buttonun bastığımızda form bilgilerini seçilen nesne üzerinden doldurduğumuz kısım
+	const onItemEdit = (id: number) => {
+		const todo = state.todos.find((x) => x.id === id);
+
+		if (todo !== undefined) {
+			if (inputTitle.current) {
+				inputTitle.current.value = todo.title;
+			}
+
+			if (inputCompleted.current) {
+				inputCompleted.current.checked = todo.completed as boolean;
+			}
 		}
 
-		if (inputCompleted.current) {
-			inputCompleted.current.checked = false;
-		}
+		// edit Mode aktif hale getir.
+		setState({ ...state, editMode: true, selectedId: id });
 	};
 
 	return (
 		<>
+			<p>
+				Seçilen : {state.selectedId}
+				<br></br>
+				Mode : {state.editMode ? 'Edit' : 'Create'}
+			</p>
+
 			<form method="post" onSubmit={onFormSubmit}>
 				<label>Title : </label>
 				<input ref={inputTitle} type="text" />
@@ -80,7 +161,11 @@ function UseEffectHookSample() {
 				<label>Completed :</label>
 				<input ref={inputCompleted} type="checkbox" />
 				<br></br>
-				<input type="submit" value="Ekle" />
+				{state.editMode === false ? (
+					<input type="submit" value="Ekle" />
+				) : (
+					<input type="submit" value="Güncelle" />
+				)}
 			</form>
 
 			{state.todos && (
@@ -104,7 +189,7 @@ function UseEffectHookSample() {
 									<td>{item.completed ? 'Yapıldı' : 'Yapılmadı'}</td>
 									<td>
 										<button onClick={() => onDeleteItem(item.id)}>Sil</button>
-										<button>Düzenle</button>
+										<button onClick={() => onItemEdit(item.id)}>Düzenle</button>
 									</td>
 								</tr>
 							);
